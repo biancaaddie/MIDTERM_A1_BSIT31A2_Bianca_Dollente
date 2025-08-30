@@ -5,9 +5,16 @@ namespace Library_Management.Controllers
 {
     public class BookController : Controller
     {
+        private readonly _IBookService _bookService;
+
+        public BookController(_IBookService bookService)
+        {
+            _bookService = bookService;
+        }
+
         public IActionResult Index()
         {
-            var books = BookService.Instance.GetBooks();
+            var books = _bookService.GetBooks();
             return View(books);
         }
 
@@ -21,18 +28,16 @@ namespace Library_Management.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View("AddModal", vm); // Re-render the modal with validation errors
+                return View("AddModal", vm);
             }
 
-            BookService.Instance.AddBook(vm);
-
+            _bookService.AddBook(vm);
             return RedirectToAction("Index");
         }
 
-
         public IActionResult EditModal(Guid id)
         {
-            var editBookViewModel = BookService.Instance.GetBookById(id);
+            var editBookViewModel = _bookService.GetBookById(id);
             if (editBookViewModel == null)
                 return NotFound();
 
@@ -47,42 +52,40 @@ namespace Library_Management.Controllers
                 return BadRequest(ModelState);
             }
 
-            BookService.Instance.UpdateBook(vm);
+            _bookService.UpdateBook(vm);
             return Ok();
         }
 
-        // ✅ UPDATED DeleteModal and Delete
         public IActionResult DeleteModal(Guid id)
         {
-            var book = BookService.Instance.GetBookById(id);
+            var book = _bookService.GetBookById(id);
             if (book == null)
                 return NotFound();
 
-            return PartialView("_DeleteBookPartial", book); // ✅ updated partial name
+            return PartialView("_DeleteBookPartial", book);
         }
 
         [HttpPost]
         public IActionResult Delete(Guid id)
         {
-            var book = BookService.Instance.GetBookById(id);
+            var book = _bookService.GetBookById(id);
             if (book == null)
                 return NotFound();
 
-            BookService.Instance.DeleteBook(id);
-            return Ok(); // You can return a redirect if not using AJAX
+            _bookService.DeleteBook(id);
+            return Ok();
         }
 
         public IActionResult Details(Guid id)
         {
-            var book = BookService.Instance.GetBooks(includeArchived: true).FirstOrDefault(b => b.BookId == id);
+            var book = _bookService.GetBooks(includeArchived: true).FirstOrDefault(b => b.BookId == id);
             if (book == null)
                 return NotFound();
 
-            ViewBag.BookCopies = BookService.Instance.GetBookCopies(id);
+            ViewBag.BookCopies = _bookService.GetBookCopies(id);
             return View(book);
         }
-        private readonly BookService _bookService = BookService.Instance;
-        // GET: Show the Add Copy form
+
         [HttpGet]
         public IActionResult AddCopy(Guid bookId)
         {
@@ -93,7 +96,6 @@ namespace Library_Management.Controllers
             return View(vm);
         }
 
-        // POST: Handle form submission
         [HttpPost]
         public IActionResult AddCopy(AddBookCopyViewModel vm)
         {
@@ -103,10 +105,9 @@ namespace Library_Management.Controllers
             }
 
             _bookService.AddBookCopy(vm);
-            return RedirectToAction("Details", new { id = vm.BookId }); // Redirect to book details
+            return RedirectToAction("Details", new { id = vm.BookId });
         }
 
-        // Archive section
         public IActionResult Archive()
         {
             var archivedBooks = _bookService.GetArchivedBooks();
@@ -141,7 +142,6 @@ namespace Library_Management.Controllers
             }
         }
 
-        // Pull-out functionality
         public IActionResult PulloutModal(Guid bookCopyId)
         {
             var bookCopy = _bookService.GetBookCopyForPullout(bookCopyId);
@@ -162,6 +162,5 @@ namespace Library_Management.Controllers
             _bookService.PulloutBookCopy(vm);
             return Json(new { success = true });
         }
-
     }
 }

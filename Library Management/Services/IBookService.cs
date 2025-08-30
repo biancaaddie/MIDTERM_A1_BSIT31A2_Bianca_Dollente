@@ -22,10 +22,78 @@ public interface _IBookService
 
 public class BookDBService : _IBookService
 {
+    public void AddAuthor(Author author)
+    {
+        throw new NotImplementedException();
+    }
+
     public void AddBook(AddBookViewModel book)
     {
         throw new NotImplementedException();
     }
 
+    public void AddBookCopy(AddBookCopyViewModel vm)
+    {
+        throw new NotImplementedException();
+    }
 
+    public void ArchiveAuthor(Guid id, bool archive)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void ArchiveBook(Guid id, bool archive)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DeleteAuthor(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DeleteBook(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEnumerable<Author> GetAllAuthorsInternal()
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEnumerable<BookListViewModel> GetArchivedBooks()
+    {
+        throw new NotImplementedException();
+    }
+
+    public EditBookViewModel GetBookById(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEnumerable<BookCopyDetailsViewModel> GetBookCopies(Guid bookId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public PulloutBookCopyViewModel? GetBookCopyForPullout(Guid bookCopyId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEnumerable<BookListViewModel> GetBooks(bool includeArchived = false)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void PulloutBookCopy(PulloutBookCopyViewModel vm)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void UpdateAuthor(EditAuthorViewModel vm)
+    {
+        throw new NotImplementedException();
+    }
 }
