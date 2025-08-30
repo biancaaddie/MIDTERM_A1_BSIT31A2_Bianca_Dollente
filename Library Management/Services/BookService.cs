@@ -1,7 +1,7 @@
 ﻿using Library_Management.Models;
 using Library_Management_Domain.Entities;
 
-public class BookService
+public class BookService : _IBookService
 {
     private readonly ICollection<Book> _books = new List<Book>();
     private readonly ICollection<Author> _authors = new List<Author>();
@@ -262,20 +262,20 @@ public class BookService
     {
         return _books.Where(b => includeArchived || !b.IsArchived)
             .Select(b => new BookListViewModel
-        {
-            BookId = b.Id,
-            Title = b.Title,
-            ISBN = b.ISBN,
-            Description = b.Description,
-            Genre = b.Genre,
-            PublishedDate = b.PublishedDate,
-            CoverImageUrl = _bookCopies.FirstOrDefault(bi => bi.Book.Id == b.Id)?.CoverImageUrl,
-            AuthorName = _authors.FirstOrDefault(a => a.Books.Any(bk => bk.Id == b.Id))?.Name,
-            AuthorProfileImageUrl = _authors.FirstOrDefault(a => a.Books.Any(bk => bk.Id == b.Id))?.ProfileImageUrl,
-            TotalCopies = _bookCopies.Count(bi => bi.Book.Id == b.Id),
-            AvailableCopies = _bookCopies.Count(bi => bi.Book.Id == b.Id && bi.PulloutDate == null),
-            IsArchived = b.IsArchived
-        });
+            {
+                BookId = b.Id,
+                Title = b.Title,
+                ISBN = b.ISBN,
+                Description = b.Description,
+                Genre = b.Genre,
+                PublishedDate = b.PublishedDate,
+                CoverImageUrl = _bookCopies.FirstOrDefault(bi => bi.Book.Id == b.Id)?.CoverImageUrl,
+                AuthorName = _authors.FirstOrDefault(a => a.Books.Any(bk => bk.Id == b.Id))?.Name,
+                AuthorProfileImageUrl = _authors.FirstOrDefault(a => a.Books.Any(bk => bk.Id == b.Id))?.ProfileImageUrl,
+                TotalCopies = _bookCopies.Count(bi => bi.Book.Id == b.Id),
+                AvailableCopies = _bookCopies.Count(bi => bi.Book.Id == b.Id && bi.PulloutDate == null),
+                IsArchived = b.IsArchived
+            });
     }
 
     public EditBookViewModel GetBookById(Guid id)
@@ -444,7 +444,7 @@ public class BookService
     public void UpdateAuthor(EditAuthorViewModel vm)
     {
         ArgumentNullException.ThrowIfNull(vm, nameof(vm));
-        
+
         var author = _authors.FirstOrDefault(a => a.Id == vm.AuthorId)
             ?? throw new KeyNotFoundException("Author not found");
 
@@ -470,7 +470,7 @@ public class BookService
             {
                 _bookCopies.Remove(bookCopy);
             }
-            
+
             // Remove the book
             _books.Remove(book);
         }
@@ -484,7 +484,7 @@ public class BookService
             ?? throw new KeyNotFoundException("Author not found");
 
         author.IsArchived = archive;
-        
+
         // Also archive/restore all books by this author
         foreach (var book in author.Books)
         {
@@ -540,7 +540,7 @@ public class BookService
     public void PulloutBookCopy(PulloutBookCopyViewModel vm)
     {
         ArgumentNullException.ThrowIfNull(vm, nameof(vm));
-        
+
         var bookCopy = _bookCopies.FirstOrDefault(bc => bc.Id == vm.BookCopyId)
             ?? throw new KeyNotFoundException("Book copy not found");
 
